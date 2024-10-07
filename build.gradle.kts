@@ -44,7 +44,7 @@ kotlin {
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            artifactId = "inhttp"
+            artifactId = "in-http"
             from(components["java"])
             versionMapping {
                 usage("java-api") {

@@ -13,7 +13,7 @@ It is designed to be simple to use and easy to understand. It is easier to confi
 ## Installation
 ### Gradle
 ```kotlin
-implementation("io.github.integr-0:inhttp:$version")
+implementation("io.github.integr-0:in-http:$version")
 ```
 
 ### Maven
