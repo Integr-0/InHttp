@@ -11,8 +11,13 @@
  * limitations under the License.
  */
 
-package net.integr
+package net.integr.client.method
 
-fun main() {
-    println("Hello World!")
+enum class InHttpMethod {
+    GET,
+    POST,
+    PUT,
+    DELETE,
+    HEAD,
+    OPTIONS
 }

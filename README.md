@@ -31,7 +31,6 @@ implementation("io.github.integr-0:inhttp:$version")
 fun main() {
     val response = InHttpClient.DEFAULT
         .get("https://www.example.com/api")
-        .withBodyJson(SimpleObject("Hello, World!"))
         .sendAndReceive()
 
     if (response.statusCode() == 200) {
