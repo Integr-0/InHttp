@@ -29,7 +29,7 @@ group = "io.github.integr-0"
 version = "1.0.0"
 
 dependencies {
-
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 }
 
 java {
@@ -44,7 +44,7 @@ kotlin {
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            artifactId = "in-http"
+            artifactId = "inhttp"
             from(components["java"])
             versionMapping {
                 usage("java-api") {
