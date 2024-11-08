@@ -72,6 +72,7 @@ val client = InHttpClient()
     .withTimeout(Duration.ofSeconds(10))
     .withRedirect(false)
     .withAuth("user", "password")
+    .build()
 ```
 
 ### Original configuration

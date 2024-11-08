@@ -14,7 +14,7 @@
 @file:Suppress("unused")
  package inhttp.client
 
-import net.integr.inhttp.request.InHttpRequest
+import inhttp.request.InHttpRequest
 import net.integr.client.method.InHttpMethod
 import java.net.Authenticator
 import java.net.InetSocketAddress
@@ -29,7 +29,6 @@ class InHttpClient {
     private var followRedirects: Boolean = true
     private var authenticator: Authenticator? = null
     private var timeout: Duration? = null
-    private var isBuilt: Boolean = false
     private var version: HttpClient.Version = HttpClient.Version.HTTP_2
 
     private var internalClient: HttpClient? = null
@@ -82,13 +81,11 @@ class InHttpClient {
         return this
     }
 
-    private fun build(): HttpClient {
-        if (isBuilt) {
-            throw IllegalStateException("Already built")
-        }
+    fun build(): BuiltInHttpClient {
+        return BuiltInHttpClient(buildInternal())
+    }
 
-        isBuilt = true
-
+    private fun buildInternal(): HttpClient {
         var curr = HttpClient.newBuilder().version(version)
 
         if (proxySelector != null) {
@@ -113,50 +110,58 @@ class InHttpClient {
         return internalClient!!
     }
 
-    fun get(url: String): InHttpRequest {
-        val preRequest = InHttpRequest(InHttpMethod.GET, url, build())
-        return preRequest
-    }
-
-    fun post(url: String): InHttpRequest {
-        val preRequest = InHttpRequest(InHttpMethod.POST, url, build())
-        return preRequest
-    }
-
-    fun put(url: String): InHttpRequest {
-        val preRequest = InHttpRequest(InHttpMethod.PUT, url, build())
-        return preRequest
-    }
-
-    fun delete(url: String): InHttpRequest {
-        val preRequest = InHttpRequest(InHttpMethod.DELETE, url, build())
-        return preRequest
-    }
-
-    fun head(url: String): InHttpRequest {
-        val preRequest = InHttpRequest(InHttpMethod.HEAD, url, build())
-        return preRequest
-    }
-
-    fun options(url: String): InHttpRequest {
-        val preRequest = InHttpRequest(InHttpMethod.OPTIONS, url, build())
-        return preRequest
-    }
-
-    fun req(method: InHttpMethod, url: String): InHttpRequest {
-        val preRequest = InHttpRequest(method, url, build())
-        return preRequest
-    }
 
     companion object {
         val DEFAULT = InHttpClient()
             .withDefaultProxy()
             .withRedirect(true)
+            .build()
 
-        fun ofOriginal(client: HttpClient): InHttpClient {
+        fun ofOriginal(client: HttpClient): BuiltInHttpClient {
             val clientI = InHttpClient()
             clientI.internalClient = client
-            return clientI
+            return clientI.build()
         }
+
+        fun new(): InHttpClient {
+            return InHttpClient()
+        }
+    }
+}
+
+class BuiltInHttpClient(private val client: HttpClient) {
+    fun get(url: String): InHttpRequest {
+        val preRequest = InHttpRequest(InHttpMethod.GET, url, client)
+        return preRequest
+    }
+
+    fun post(url: String): InHttpRequest {
+        val preRequest = InHttpRequest(InHttpMethod.POST, url, client)
+        return preRequest
+    }
+
+    fun put(url: String): InHttpRequest {
+        val preRequest = InHttpRequest(InHttpMethod.PUT, url, client)
+        return preRequest
+    }
+
+    fun delete(url: String): InHttpRequest {
+        val preRequest = InHttpRequest(InHttpMethod.DELETE, url, client)
+        return preRequest
+    }
+
+    fun head(url: String): InHttpRequest {
+        val preRequest = InHttpRequest(InHttpMethod.HEAD, url, client)
+        return preRequest
+    }
+
+    fun options(url: String): InHttpRequest {
+        val preRequest = InHttpRequest(InHttpMethod.OPTIONS, url, client)
+        return preRequest
+    }
+
+    fun req(method: InHttpMethod, url: String): InHttpRequest {
+        val preRequest = InHttpRequest(method, url, client)
+        return preRequest
     }
 }

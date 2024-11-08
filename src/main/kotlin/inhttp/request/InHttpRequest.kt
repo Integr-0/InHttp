@@ -13,7 +13,7 @@
 
 @file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
-package net.integr.inhttp.request
+package inhttp.request
 
 import kotlinx.serialization.json.JsonElement
 import inhttp.jsonString
@@ -33,6 +33,8 @@ import java.nio.file.Paths
 class InHttpRequest(private val method: InHttpMethod, private val url: String, private val client: HttpClient) {
     val headers: MutableMap<String, String> = mutableMapOf()
     var body: HttpRequest.BodyPublisher = BodyPublishers.noBody()
+
+    private var dontAddDefaults = false
 
     fun withHeader(key: String, value: String): InHttpRequest {
         headers[key] = value
@@ -59,8 +61,13 @@ class InHttpRequest(private val method: InHttpMethod, private val url: String, p
         return this
     }
 
-    fun withDefaultUserAgent(): InHttpRequest {
+    fun withIncognitoUserAgent(): InHttpRequest {
         headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
+        return this
+    }
+
+    fun withDefaultUserAgent(): InHttpRequest {
+        headers["User-Agent"] = "InHttp/1.0.1"
         return this
     }
 
@@ -69,9 +76,18 @@ class InHttpRequest(private val method: InHttpMethod, private val url: String, p
         return this
     }
 
-    fun withDefaults(): InHttpRequest {
+    private fun withDefaults(): InHttpRequest {
         withDefaultAccept()
         withDefaultUserAgent()
+        return this
+    }
+
+    private fun withDefaultsIfNecessary() {
+        if (!dontAddDefaults) withDefaults()
+    }
+
+    fun withoutDefaults(): InHttpRequest {
+        dontAddDefaults = true
         return this
     }
 
@@ -106,6 +122,8 @@ class InHttpRequest(private val method: InHttpMethod, private val url: String, p
     }
 
     fun sendAndReceive(): InHttpTextResponse {
+        withDefaultsIfNecessary()
+
         var req = HttpRequest.newBuilder()
             .uri(URI.create(url))
 
@@ -120,6 +138,8 @@ class InHttpRequest(private val method: InHttpMethod, private val url: String, p
     }
 
     fun sendAndReceiveByteArray(): InHttpByteArrayResponse {
+        withDefaultsIfNecessary()
+
         var req = HttpRequest.newBuilder()
             .uri(URI.create(url))
 
@@ -134,6 +154,8 @@ class InHttpRequest(private val method: InHttpMethod, private val url: String, p
     }
 
     fun sendAndReceiveInputStream(): InHttpInputStreamResponse {
+        withDefaultsIfNecessary()
+
         var req = HttpRequest.newBuilder()
             .uri(URI.create(url))
 
@@ -148,6 +170,8 @@ class InHttpRequest(private val method: InHttpMethod, private val url: String, p
     }
 
     fun sendAndSaveFile(path: String): InHttpDiscardingResponse {
+        withDefaultsIfNecessary()
+
         var req = HttpRequest.newBuilder()
             .uri(URI.create(url))
 
@@ -162,6 +186,8 @@ class InHttpRequest(private val method: InHttpMethod, private val url: String, p
     }
 
     fun sendAndReceiveLines(): InHttpLinesResponse {
+        withDefaultsIfNecessary()
+
         var req = HttpRequest.newBuilder()
             .uri(URI.create(url))
 
@@ -176,6 +202,8 @@ class InHttpRequest(private val method: InHttpMethod, private val url: String, p
     }
 
     fun send(): InHttpDiscardingResponse {
+        withDefaultsIfNecessary()
+
         val req = HttpRequest.newBuilder()
             .uri(URI.create(url))
 
