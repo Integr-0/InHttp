@@ -20,7 +20,7 @@ implementation("io.github.integr-0:in-http:$version")
 ```xml
 <dependency>
     <groupId>io.github.integr-0</groupId>
-    <artifactId>inhttp</artifactId>
+    <artifactId>in-http</artifactId>
     <version>${version}</version>
 </dependency>
 ```
